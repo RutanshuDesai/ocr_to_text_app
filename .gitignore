@@ -1,0 +1,32 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Editor/IDE
+.idea/
+.vscode/
+
+# Env/config
+.env
+.env.*
+
+# Logs
+*.log
+
+# Test/coverage/tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+
+# Project data/assets not for public repo
+documents/
+extra/
+folder_runtime.py
+single_file_runtime.py
