@@ -1,4 +1,4 @@
-# Clone your public repo into the temporary cloud environment
+# Clone your public repo into the temporary cloud environment OR git pull if already cloned and in the directory
 git clone https://github.com/RutanshuDesai/<repo_name>.git
 
 # Move into the folder
@@ -16,3 +16,14 @@ gcloud run deploy my-service \
   --region us-east1 \
   --allow-unauthenticated \
   --max-instances 1
+
+
+## configuring secret and allowing the access to cloud run  
+# Give permission to the default compute service account
+gcloud secrets add-iam-policy-binding APP_USERNAME \
+    --member="serviceAccount:<project_number>-compute@developer.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"
+
+gcloud secrets add-iam-policy-binding APP_PASSWORD \
+    --member="serviceAccount:<project_number>-compute@developer.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"
