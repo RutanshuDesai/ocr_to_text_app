@@ -4,6 +4,9 @@ git clone https://github.com/RutanshuDesai/<repo_name>.git
 # Move into the folder
 cd <repo_name>
 
+## Create the artifact repository
+gcloud artifacts repositories create <repo_name>     --repository-format=docker     --location=us-east1     --description="Docker repository for my OCR app"
+
 ## Build the image
 gcloud builds submit --tag us-east1-docker.pkg.dev/<project_id>/<repo_name>/<app_name> .
 

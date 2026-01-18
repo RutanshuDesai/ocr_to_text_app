@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 
 import streamlit as st
 from PIL import Image
+from dotenv import load_dotenv
 
 from translation import SUPPORTED_EXTENSIONS, extract_text, save_text
 
@@ -34,9 +35,36 @@ def ocr_pdf(pdf_path: str, language: str) -> str:
     return "\n\n".join(text_chunks).strip()
 
 
+load_dotenv()
+
+APP_USERNAME = os.getenv("APP_USERNAME", "")
+APP_PASSWORD = os.getenv("APP_PASSWORD", "")
+
 st.set_page_config(page_title="OCR to Text", page_icon="📄")
 st.title("OCR to Text")
 st.write("Upload a scanned PDF/TIF/image file and download the OCR text.")
+
+if "is_authenticated" not in st.session_state:
+    st.session_state.is_authenticated = False
+
+if not APP_USERNAME or not APP_PASSWORD:
+    st.error("App credentials not configured. Set APP_USERNAME and APP_PASSWORD.")
+    st.stop()
+
+with st.sidebar:
+    st.subheader("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if username == APP_USERNAME and password == APP_PASSWORD:
+            st.session_state.is_authenticated = True
+        else:
+            st.session_state.is_authenticated = False
+            st.error("Invalid username or password.")
+
+if not st.session_state.is_authenticated:
+    st.info("Please log in to access the app.")
+    st.stop()
 
 uploaded_file = st.file_uploader(
     "Upload scanned file",
