@@ -4,33 +4,27 @@ from tempfile import NamedTemporaryFile
 
 import streamlit as st
 from PIL import Image
+import fitz
 from dotenv import load_dotenv
 
-from translation import SUPPORTED_EXTENSIONS, extract_text, save_text
+from translation import SUPPORTED_EXTENSIONS, extract_text, extract_text_from_image, save_text
 
 
 def ocr_pdf(pdf_path: str, language: str) -> str:
     text_chunks = []
-    with Image.open(pdf_path) as pdf:
-        page_count = getattr(pdf, "n_frames", 1)
-        for page_index in range(page_count):
-            try:
-                pdf.seek(page_index)
-            except EOFError:
-                break
+    try:
+        doc = fitz.open(pdf_path)
+    except Exception as exc:
+        raise ValueError("Unable to read PDF. Ensure it is a valid PDF file.") from exc
 
-            page = pdf.convert("RGB")
-            with NamedTemporaryFile(delete=False, suffix=".png") as page_tmp:
-                page_path = page_tmp.name
-
-            try:
-                page.save(page_path, format="PNG")
-                text_chunks.append(extract_text(page_path, language))
-            finally:
-                try:
-                    os.remove(page_path)
-                except OSError:
-                    pass
+    with doc:
+        for page in doc:
+            pix = page.get_pixmap()
+            mode = "RGBA" if pix.alpha else "RGB"
+            page_image = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
+            if mode == "RGBA":
+                page_image = page_image.convert("RGB")
+            text_chunks.append(extract_text_from_image(page_image, language))
 
     return "\n\n".join(text_chunks).strip()
 
@@ -95,7 +89,11 @@ if uploaded_file:
 
             try:
                 if suffix == ".pdf":
-                    text = ocr_pdf(input_path, language)
+                    try:
+                        text = ocr_pdf(input_path, language)
+                    except ValueError as exc:
+                        st.error(str(exc))
+                        text = ""
                 elif suffix in SUPPORTED_EXTENSIONS:
                     text = extract_text(input_path, language)
                 else:

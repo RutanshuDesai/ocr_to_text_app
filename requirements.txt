@@ -2,3 +2,4 @@ pytesseract>=0.3.13
 Pillow>=12.1.0
 streamlit>=1.41.0
 python-dotenv>=1.0.1
+pymupdf>=1.25.2
