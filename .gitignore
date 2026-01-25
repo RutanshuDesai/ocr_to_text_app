@@ -30,5 +30,4 @@ documents/
 extra/
 folder_runtime.py
 single_file_runtime.py
-features.txt
 prod_cloud_run.sh

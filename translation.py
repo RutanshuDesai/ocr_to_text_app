@@ -2,6 +2,7 @@ import pytesseract
 from PIL import Image
 from pathlib import Path
 import argparse
+import fitz
 
 SUPPORTED_EXTENSIONS = {".tif", ".tiff", ".png", ".jpg", ".jpeg"}
 
@@ -25,6 +26,25 @@ def extract_text(image_path: str, language: str = "guj") -> str:
 def extract_text_from_image(image: Image.Image, language: str = "guj") -> str:
     """Extract text from a PIL Image using Tesseract OCR."""
     return pytesseract.image_to_string(image, lang=language)
+
+
+def ocr_pdf(pdf_path: str, language: str) -> str:
+    text_chunks = []
+    try:
+        doc = fitz.open(pdf_path)
+    except Exception as exc:
+        raise ValueError("Unable to read PDF. Ensure it is a valid PDF file.") from exc
+
+    with doc:
+        for page in doc:
+            pix = page.get_pixmap()
+            mode = "RGBA" if pix.alpha else "RGB"
+            page_image = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
+            if mode == "RGBA":
+                page_image = page_image.convert("RGB")
+            text_chunks.append(extract_text_from_image(page_image, language))
+
+    return "\n\n".join(text_chunks).strip()
 
 
 def save_text(text: str, output_path: str) -> None:
