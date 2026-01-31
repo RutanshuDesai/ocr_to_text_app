@@ -13,9 +13,11 @@ load_dotenv()
 APP_USERNAME = os.getenv("APP_USERNAME", "")
 APP_PASSWORD = os.getenv("APP_PASSWORD", "")
 
-st.set_page_config(page_title="OCR to Text", page_icon="📄")
-st.title("OCR to Text")
-st.write("Upload a scanned PDF/TIF/image file and download the OCR text.")
+st.set_page_config(page_title="Shivam Services OCR", page_icon="🚀")
+st.title("Regional Language Text Extractor")
+st.write("Upload a scanned TIF/image file or a PDF and download the OCR text.")
+
+
 
 if "is_authenticated" not in st.session_state:
     st.session_state.is_authenticated = False
@@ -25,6 +27,7 @@ if not APP_USERNAME or not APP_PASSWORD:
     st.stop()
 
 with st.sidebar:
+    st.markdown('<div style="color: #888; font-size: 1.4em; text-align: left; margin-bottom: 0.5em;">Shivam Services</div>', unsafe_allow_html=True)
     st.subheader("Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -35,12 +38,15 @@ with st.sidebar:
             st.session_state.is_authenticated = False
             st.error("Invalid username or password.")
 
+    st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="color: #888; font-size: 0.9em; text-align: left; margin-bottom: 1.9em;"><i>Made by Rutanshu Desai</i></div>', unsafe_allow_html=True)
+
 if not st.session_state.is_authenticated:
     st.info("Please log in to access the app.")
     st.stop()
 
 uploaded_file = st.file_uploader(
-    "Upload scanned file",
+    "",
     type=["pdf", "tif", "tiff", "png", "jpg", "jpeg"],
 )
 language = st.text_input("Tesseract language code", value="guj")
