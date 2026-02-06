@@ -31,3 +31,6 @@ extra/
 folder_runtime.py
 single_file_runtime.py
 prod_cloud_run.sh
+
+.doc_venv
+docling
